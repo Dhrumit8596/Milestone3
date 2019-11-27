@@ -71,7 +71,6 @@ public class RankedRetrievals {
         }
         //DiskInvertedIndex DII = new DiskInvertedIndex(mpath+"\\index\\");
         PriorityQueue<PostingAccumulator> PQ = new PriorityQueue<>();
-        
         for(HashMap.Entry<Integer, PostingAccumulator> entry: map.entrySet())
         {
             double LD = rank_strategy.getLD(entry.getKey());
@@ -85,7 +84,6 @@ public class RankedRetrievals {
             }
             PQ.add(p);
         }
-        
         int size = PQ.size();
         int i =0;
         while(i<50 && i<size)

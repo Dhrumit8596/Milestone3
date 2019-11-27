@@ -53,6 +53,8 @@ public class Relevance {
     private List<PostingAccumulator> Ranking_results = new ArrayList<>();
     private static AdvancedTokenProcessor processor = new AdvancedTokenProcessor();
     private static RankingStrategy ranking_strategy;
+    private static String query_path;
+    private static String qrel_path;
     
 
     static void QueryIndex()
@@ -93,16 +95,12 @@ public class Relevance {
     
     public static void findMAP() throws IOException
     {
-      String path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
-      String path_rel = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
-      Scanner sc1 = new Scanner(new File(path));
-      Scanner sc2 = new Scanner(new File(path_rel));
+      query_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
+      qrel_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
+      Scanner sc1 = new Scanner(new File(query_path));
+      Scanner sc2 = new Scanner(new File(qrel_path));
       String query = "";
       String rel = "";
-     // File fout = new File("C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\out.txt");
-     // FileOutputStream fos = new FileOutputStream(fout);
-      //BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-      
       List<PostingAccumulator> results = new ArrayList<>();
       double MAP = 0;
       double number_queries=0;
@@ -117,7 +115,6 @@ public class Relevance {
           {
               rel_list.add(Integer.parseInt(s));
           }
-//          System.out.println(query);
           results = mMethod(query);
           double AP = 0;
           double numerator =0;
@@ -144,28 +141,21 @@ public class Relevance {
           }
           AP = AP/(double)rel_list.size();
 //        System.out.println(AP);
-//          bw.write(doc_list);
-//          bw.newLine();
           MAP += AP;
        }
       MAP = MAP/number_queries;
       System.out.println("MAP = " + MAP);
-      
-//      bw.close();
-      
     }
     
     public static void main(String args[]) throws IOException {
       QueryIndex();
+      System.out.println("Enter the corpus path : ");
+      Scanner sc = new Scanner(System.in);
+      mPath = sc.nextLine();
       DiskInvertedIndex DII = new DiskInvertedIndex(mPath + "\\index\\");
-     
-      String path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
-      String path_rel = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
-      Scanner sc1 = new Scanner(new File(path));
-      Scanner sc2 = new Scanner(new File(path_rel));
       
-      String query = "";
-      String rel = "";
+      query_path = mPath + "\\relevance\\queries";
+      qrel_path = mPath + "\\relevance\\qrel";
       
       ranking_strategy = new DefaultRanking(DII);
       System.out.println("Default Ranking");
