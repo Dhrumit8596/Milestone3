@@ -103,6 +103,7 @@ public class Relevance {
       String rel = "";
       List<PostingAccumulator> results = new ArrayList<>();
       double MAP = 0;
+      double MRT = 0;
       double number_queries=0;
       while(sc1.hasNextLine())
       {
@@ -115,7 +116,10 @@ public class Relevance {
           {
               rel_list.add(Integer.parseInt(s));
           }
+          long startTime = System.currentTimeMillis();;
           results = mMethod(query);
+          long endTime = System.currentTimeMillis();;
+          long queryTime = (endTime - startTime);
           double AP = 0;
           double numerator =0;
           double denominator = 0;
@@ -142,9 +146,15 @@ public class Relevance {
           AP = AP/(double)rel_list.size();
 //        System.out.println(AP);
           MAP += AP;
+          MRT += queryTime;
        }
+      // x --- 256 ...... 1sec --?
+      double throughput = 256/(MRT/1000);
       MAP = MAP/number_queries;
+      MRT = MRT/number_queries;
       System.out.println("MAP = " + MAP);
+      System.out.println("Throughput = " + throughput);
+      System.out.println("MRT = " + MRT + " miliseconds");
     }
     
     public static void main(String args[]) throws IOException {
@@ -160,12 +170,15 @@ public class Relevance {
       ranking_strategy = new DefaultRanking(DII);
       System.out.println("Default Ranking");
       findMAP();
+      System.out.println();
       ranking_strategy = new OkapiBM25Ranking(DII);
       System.out.println("OkapiBM25 Ranking");
       findMAP();
+      System.out.println();
       ranking_strategy = new Tf_IdfRanking(DII);
       System.out.println("Tf_Idf Ranking");
       findMAP();
+      System.out.println();
       ranking_strategy = new WackyRanking(DII);
       System.out.println("Wacky Ranking");
       findMAP();
