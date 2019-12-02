@@ -35,6 +35,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jfree.ui.RefineryUtilities;
 
 /**
  *
@@ -111,6 +112,7 @@ public class Relevance {
           String doc_list = "";
           query = sc1.nextLine();
           rel = sc2.nextLine();
+//          System.out.println(query);
           Set<Integer> rel_list = new HashSet<>();
           for(String s : rel.split(" "))
           {
@@ -148,13 +150,72 @@ public class Relevance {
           MAP += AP;
           MRT += queryTime;
        }
-      // x --- 256 ...... 1sec --?
       double throughput = 256/(MRT/1000);
       MAP = MAP/number_queries;
       MRT = MRT/number_queries;
       System.out.println("MAP = " + MAP);
       System.out.println("Throughput = " + throughput);
       System.out.println("MRT = " + MRT + " miliseconds");
+    }
+    
+    public static void plotgraph(String title) throws IOException
+    {
+      query_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
+      qrel_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
+      Scanner sc1 = new Scanner(new File(query_path));
+      Scanner sc2 = new Scanner(new File(qrel_path));
+      String query = sc1.nextLine();
+      String rel = sc2.nextLine();
+      
+      List<PostingAccumulator> results = new ArrayList<>();
+      double MAP = 0;
+      double MRT = 0;
+      double number_queries=0;
+      
+          number_queries++;
+          String doc_list = "";
+//          System.out.println(query);
+          Set<Integer> rel_list = new HashSet<>();
+          for(String s : rel.split(" "))
+          {
+              rel_list.add(Integer.parseInt(s));
+          }
+          results = mMethod(query);
+          double numerator =0;
+          double denominator = 0;
+          double precision, recall;
+          List<Double> precision_list = new ArrayList<>();
+          List<Double> recall_list = new ArrayList<>();
+          for(PostingAccumulator p : results)
+          {
+             denominator++;
+             Posting posting = p.getPosting();
+             int doc_id = posting.getDocumentId();
+             Document d = corpus.getDocument(doc_id);
+             
+             Path doc_path = d.getFilePath();
+             String doc_name = doc_path.getFileName().toString();
+            // System.out.println(doc_name);
+             doc_name = doc_name.replaceFirst("[.][^.]+$", "");
+             int doc_no = Integer.parseInt(doc_name);
+             if(rel_list.contains(doc_no))
+             {
+                 numerator++;
+                 //doc_list += doc_no + " ";
+             }
+             precision = numerator/denominator; 
+             precision_list.add(precision);
+             recall = numerator/rel_list.size();
+             recall_list.add(recall);
+             
+             
+          }
+    final XYPlot demo = new XYPlot(title,recall_list,precision_list);
+    demo.pack();
+    RefineryUtilities.centerFrameOnScreen(demo);
+    demo.setVisible(true);
+       
+      
     }
     
     public static void main(String args[]) throws IOException {
@@ -169,18 +230,22 @@ public class Relevance {
       
       ranking_strategy = new DefaultRanking(DII);
       System.out.println("Default Ranking");
+      plotgraph("Default Ranking");
       findMAP();
       System.out.println();
       ranking_strategy = new OkapiBM25Ranking(DII);
       System.out.println("OkapiBM25 Ranking");
+      plotgraph("OkapiBM25 Ranking");
       findMAP();
       System.out.println();
       ranking_strategy = new Tf_IdfRanking(DII);
       System.out.println("Tf_Idf Ranking");
+      plotgraph("Tf_Idf Ranking");
       findMAP();
       System.out.println();
       ranking_strategy = new WackyRanking(DII);
       System.out.println("Wacky Ranking");
+      plotgraph("Wacky Ranking");
       findMAP();
       
       
