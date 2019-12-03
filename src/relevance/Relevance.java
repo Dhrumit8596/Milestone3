@@ -60,7 +60,7 @@ public class Relevance {
 
     static void QueryIndex()
     {
-        mPath = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield";
+        //mPath = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield";
         corpus = DirectoryCorpus.loadJsonDirectory(Paths.get(mPath).toAbsolutePath(), ".json");
         System.out.println(corpus.getCorpusSize());
         DiskInvertedIndex DII = new DiskInvertedIndex(mPath + "\\index\\");
@@ -96,8 +96,8 @@ public class Relevance {
     
     public static void findMAP() throws IOException
     {
-      query_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
-      qrel_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
+      query_path = mPath +"\\relevance\\queries";
+      qrel_path = mPath + "\\relevance\\qrel";
       Scanner sc1 = new Scanner(new File(query_path));
       Scanner sc2 = new Scanner(new File(qrel_path));
       String query = "";
@@ -160,8 +160,8 @@ public class Relevance {
     
     public static void plotgraph(String title) throws IOException
     {
-      query_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\queries";
-      qrel_path = "C:\\Docs\\Study\\SET\\Data\\relevance_cranfield\\relevance\\qrel";
+      query_path = mPath +"\\relevance\\queries";
+      qrel_path = mPath + "\\relevance\\qrel";
       Scanner sc1 = new Scanner(new File(query_path));
       Scanner sc2 = new Scanner(new File(qrel_path));
       String query = sc1.nextLine();
@@ -219,10 +219,11 @@ public class Relevance {
     }
     
     public static void main(String args[]) throws IOException {
-      QueryIndex();
+      
       System.out.println("Enter the corpus path : ");
       Scanner sc = new Scanner(System.in);
       mPath = sc.nextLine();
+      QueryIndex();
       DiskInvertedIndex DII = new DiskInvertedIndex(mPath + "\\index\\");
       
       query_path = mPath + "\\relevance\\queries";
