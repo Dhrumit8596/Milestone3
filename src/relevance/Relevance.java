@@ -300,7 +300,8 @@ public class Relevance {
       ranking_strategy = new OkapiBM25Ranking(DII);
       System.out.println("OkapiBM25 Ranking");
       turn_in_results("what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft . ");
-              
+      
+      ranking_strategy = new DefaultRanking(DII);
       System.out.println("Default Ranking");
       plotgraph("Default Ranking");
       findMAP();
