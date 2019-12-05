@@ -118,9 +118,9 @@ public class Relevance {
           {
               rel_list.add(Integer.parseInt(s));
           }
-          long startTime = System.currentTimeMillis();;
+          long startTime = System.currentTimeMillis();
           results = mMethod(query);
-          long endTime = System.currentTimeMillis();;
+          long endTime = System.currentTimeMillis();
           long queryTime = (endTime - startTime);
           double AP = 0;
           double numerator =0;
@@ -218,6 +218,71 @@ public class Relevance {
       
     }
     
+    public static void turn_in_results(String query) throws IOException
+    {
+        qrel_path = mPath + "\\relevance\\qrel";
+      //Scanner sc1 = new Scanner(new File(query_path));
+      Scanner sc2 = new Scanner(new File(qrel_path));
+      
+      String rel = sc2.nextLine();
+      
+      
+      double MAP = 0;
+      double MRT = 0;
+      double number_queries=0;
+          String doc_list = "";
+//          System.out.println(query);
+          Set<Integer> rel_list = new HashSet<>();
+          for(String s : rel.split(" "))
+          {
+              rel_list.add(Integer.parseInt(s));
+          }
+        List<PostingAccumulator> results = new ArrayList<>();
+        results = mMethod(query);
+        double AP = 0;
+        double numerator =0;
+        double denominator = 0;
+        double precision, recall;
+        System.out.println("Ranked retrieval results ");
+        for(PostingAccumulator p : results)
+          {
+             denominator++;
+             Posting posting = p.getPosting();
+             int doc_id = posting.getDocumentId();
+             Document d = corpus.getDocument(doc_id);
+             
+             Path doc_path = d.getFilePath();
+             String doc_name = doc_path.getFileName().toString();
+             System.out.print(doc_name+ " ");
+             doc_name = doc_name.replaceFirst("[.][^.]+$", "");
+             int doc_no = Integer.parseInt(doc_name);
+             if(rel_list.contains(doc_no))
+             {
+                 numerator++;
+                 double Pik = numerator/denominator;
+                 AP += Pik;
+                 doc_list += doc_no + " ";
+             }
+             precision = numerator/denominator; 
+            // precision_list.add(precision);
+             recall = numerator/rel_list.size();
+             //recall_list.add(recall);
+         }
+        System.out.println();
+        System.out.println("Relevant docs "+doc_list);
+        System.out.println("The Average Precision for Default ranking at K=50 "+ AP);
+        long startTime = System.currentTimeMillis();
+        for(int i =0; i<30 ; i++)
+        {
+          
+          results = mMethod(query);
+        }
+        long endTime = System.currentTimeMillis();
+        long queryTime = (endTime - startTime);
+        long throughput = 30/(queryTime/1000);
+        System.out.println("Throughput -- " + throughput );
+    }
+    
     public static void main(String args[]) throws IOException {
       
       System.out.println("Enter the corpus path : ");
@@ -230,6 +295,12 @@ public class Relevance {
       qrel_path = mPath + "\\relevance\\qrel";
       
       ranking_strategy = new DefaultRanking(DII);
+      System.out.println("Default Ranking");
+      turn_in_results("what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft . ");
+      ranking_strategy = new OkapiBM25Ranking(DII);
+      System.out.println("OkapiBM25 Ranking");
+      turn_in_results("what similarity laws must be obeyed when constructing aeroelastic models of heated high speed aircraft . ");
+              
       System.out.println("Default Ranking");
       plotgraph("Default Ranking");
       findMAP();

@@ -17,7 +17,7 @@ public class XYPlot extends ApplicationFrame {
 public XYPlot(final String title, List<Double> x, List<Double> y ) {
 
     super(title);
-    final XYSeries series = new XYSeries("Random Data");
+    final XYSeries series = new XYSeries("Precesion/Recall Data");
     for(int i = 0; i<x.size();i++)
     {
         series.add(x.get(i), y.get(i));
